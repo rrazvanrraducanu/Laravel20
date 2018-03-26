@@ -25,10 +25,10 @@ class FlowersController extends Controller
         return view('flowers.addflower');
     }
     public function store(){
-        $validation=Validator::make(Request::all(),Flower::$rules);
-        if($validation->fails()){
-            return redirect()->back()->withInput()->withErrors($validation->messages());
+        if(!Flower::isValid(Request::all())){
+            return redirect()->back()->withInput()->withErrors(Flower::$errors);
         }
+
 
         $flower=new Flower;
         $flower->nume=Request::input('nume');
@@ -60,15 +60,19 @@ class FlowersController extends Controller
     }
     public function updateData($nume)
     {
-        Flower::where('nume', $nume)->update(array(
-            'nume'=>Request::input('nume'),
-            'marime'=>Request::input('marime'),
-            'culoare'=>Request::input('culoare'),
-            'pret'=>Request::input('pret'),
-        ));
+        if(!Flower::isValid(Request::all())){
+            return 'Vai! Vai! Vai! Entered data is not OK';
+        }  else {
+            Flower::where('nume', $nume)->update(array(
+                'nume' => Request::input('nume'),
+                'marime' => Request::input('marime'),
+                'culoare' => Request::input('culoare'),
+                'pret' => Request::input('pret'),
+            ));
 
-        Session::flash('message', 'Record updated!');
-        return redirect('/');
+            Session::flash('message', 'Record updated!');
+            return redirect('/');
+        }
     }
 
 }
