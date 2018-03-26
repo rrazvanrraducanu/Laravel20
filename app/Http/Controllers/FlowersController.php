@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 //use Illuminate\Http\Request;
 use App\Flower;
+use Validator;
 use Request;
 use Session;
 
@@ -24,6 +25,10 @@ class FlowersController extends Controller
         return view('flowers.addflower');
     }
     public function store(){
+        $validation=Validator::make(Request::all(),Flower::$rules);
+        if($validation->fails()){
+            return redirect()->back()->withInput()->withErrors($validation->messages());
+        }
 
         $flower=new Flower;
         $flower->nume=Request::input('nume');
